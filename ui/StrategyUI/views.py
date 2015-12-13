@@ -100,6 +100,13 @@ def user_run_strategy(request):
                               context_instance=RequestContext(request))
 
 def run_strategy_handler(request):
+    try:
+        s = Strategy.objects.get(name=request.POST["strategy_name"])[:1]
+    except:
+        redirect("/user/run_test/")
+    strategy_name = s.name
+    strategy_path = s.path
+    # call strategy tester cmd with path and params
     p = subprocess.Popen('ls', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     results = []
     for line in p.stdout.readlines():
