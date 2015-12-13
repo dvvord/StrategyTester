@@ -27,6 +27,11 @@ class Strategy(models.Model):
     name = models.CharField(max_length=50)
     path = models.CharField(max_length=260)
 
+class Trade(models.Model):
+    date = models.DateTimeField(default=datetime.now())
+    equity = models.FloatField()
+    profit = models.FloatField()
+
 
 class Result(models.Model):
     strategy = models.ForeignKey(Strategy)

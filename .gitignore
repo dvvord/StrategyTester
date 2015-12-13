@@ -3,3 +3,4 @@ ui/StrategyUI/upload/
 ui/.idea/
 ui/db.sqlite3
 ui/.idea/workspace.xml
+data/

@@ -102,17 +102,20 @@ def user_run_strategy(request):
 def run_strategy_handler(request):
     try:
         s = Strategy.objects.get(name=request.POST["strategy_name"])[:1]
+        strategy_name = s.name
+        strategy_path = s.path
     except:
         redirect("/user/run_test/")
-    strategy_name = s.name
-    strategy_path = s.path
+
     # call strategy tester cmd with path and params
-    p = subprocess.Popen('ls', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen('C:\Users\admin\Anaconda\python.exe X:/Projects/StrategyTester/main.py GBPUSD 1000.0 GBPUSD_20140102.csv',
+                         shell=True, stdout=subprocess.STDOUT)
+    p.wait()
+
     results = []
     for line in p.stdout.readlines():
         results.append(line)
 
-    p.wait()
     return render_to_response('user_statistics_page.html', {'results': results},
                               context_instance=RequestContext(request))
 
