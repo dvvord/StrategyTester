@@ -1,0 +1,9 @@
+{% extends "main_manager_page.html" %}
+{% block content %}
+<form action="/manager/upload_data_handle/" enctype="multipart/form-data" method="post">
+<p>Please specify a file:<br>
+<input type="file" name="datafile" size="40">
+</p>
+<input type="submit" value="Upload">
+</form>
+{% endblock %}

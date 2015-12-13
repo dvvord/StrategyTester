@@ -1,0 +1,6 @@
+{% extends "main_client_page.html" %}
+{% block content %}
+{% if request.session.authenticated %}
+Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.
+{% endif %}
+{% endblock %}

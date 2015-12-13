@@ -9,7 +9,7 @@ market_data = DataHandler(..) # LoadData, generates MARKET event on new data arr
 event_queue = EventQueue(..) # Create queue
 broker = ExecutionHandler(..) # Connect to broker or process simulation
 strategy  = Strategy(..) # Trading strategy - later will use Strategy patter to change during execution
-risk_manager = RiskManager(..) # Stores openned positions, and will analyze trading events according to Portfolio and
+risk_manager = RiskManager(..) # Stores openned positions, and will analyze trading events according to RiskManager and
                                # current market state
 
 while True: # Infinite event loop cycle

@@ -1,0 +1,13 @@
+{% extends "main_manager_page.html" %}
+{% block content %}
+{% if request.session.authenticated %}
+Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.
+    <br>
+<form method="POST" action="/manager/create_user_action/">
+<input type="text" placeholder="User name" name="user"><br>
+<input type="text" placeholder="Password" name="password"><br>
+<input type="text" placeholder="E-mail" name="email"><br>
+<input type="submit" name="Create">
+</form>
+{% endif %}
+{% endblock %}

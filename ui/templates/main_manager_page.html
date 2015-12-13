@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+{% if request.session.authenticated and request.session.role == "manager" %}
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Main manager page</title>
+</head>
+<body>
+<h1>Welcome, {{ request.session.user_name }}!</h1>
+<form method="post" action="/manager/create_user/">
+  <button type="submit">Create User</button>
+</form>
+<form method="post" action="/manager/create_profile/">
+  <button type="submit">Create Profile</button>
+</form>
+<form method="post" action="/manager/upload_data/">
+  <button type="submit">Upload Data</button>
+</form>
+<form method="post" action="/manager/list_users/">
+  <button type="submit">List Users</button>
+</form>
+<form method="post" action="/manager/list_profiles/">
+  <button type="submit">List Profiles</button>
+</form>
+<form method="post" action="/manager/statistics/">
+  <button type="submit">Get Statistics</button>
+</form>
+<form method="post" action="/logout/">
+  <button type="submit">Logout</button>
+</form>
+{% block content %}
+{% endblock %}
+</body>
+{% endif %}
+</html>

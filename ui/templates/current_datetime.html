@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html>
+{% if request.session.authenticated %}
+<body>Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.</body>
+{% endif %}
+</html>

@@ -1,0 +1,18 @@
+{% extends "main_manager_page.html" %}
+{% block content %}
+{% if request.session.authenticated %}
+<br>
+<form method="POST" action="/manager/create_profile_action/">
+<input type="text" placeholder="Profile name" name="profile"><br>
+<input type="text" placeholder="0.00" name="commission"><br>
+<select name="data_name">
+<option value="0" selected>(please select:)</option>
+    {% for item in data_list %}
+        <option value="{{ item.name }}">{{ item.name }}</option>
+    {% endfor %}
+</select>
+<br>
+<input type="submit" name="Create">
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "main_manager_page.html" %}
+{% block content %}
+{% if request.session.authenticated %}
+    <br>
+    Users list:
+    <table>
+    {% for item in results %}
+        <tr>
+            <td>{{ item.name }}</td><td>{{ item.commission }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+<a href="/manager/">Back to menu</a>
+{% endif %}
+{% endblock %}

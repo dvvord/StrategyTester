@@ -1,0 +1,15 @@
+{% extends "main_manager_page.html" %}
+{% block content %}
+{% if request.session.authenticated %}
+Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.
+    <br>
+    <table>
+    {% for item in results %}
+        <tr>
+            <td>{{ item }}</td><td>{{ item }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+<a href="/manager/">Back to menu</a>
+{% endif %}
+{% endblock %}
