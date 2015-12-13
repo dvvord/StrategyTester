@@ -1,4 +1,5 @@
 Thumbs.db
 ui/StrategyUI/upload/
 ui/.idea/
-ui/.idea/*
+ui/db.sqlite3
+ui/.idea/workspace.xml
