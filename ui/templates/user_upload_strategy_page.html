@@ -1,6 +1,11 @@
 {% extends "main_client_page.html" %}
 {% block content %}
 {% if request.session.authenticated %}
-Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.
+<form action="/user/upload_data_handle/" enctype="multipart/form-data" method="post">
+<p>Please specify a file:<br>
+<input type="file" name="datafile" size="40">
+</p>
+<input type="submit" value="Upload">
+</form>
 {% endif %}
 {% endblock %}

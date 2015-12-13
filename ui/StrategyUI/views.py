@@ -4,7 +4,7 @@ from django.template.loader import get_template
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
-
+import subprocess
 import os
 
 from models import User, Profile, Result, Data, Strategy
@@ -69,16 +69,45 @@ def logout(request):
 
 def user_upload_strategy(request):
     now = datetime.now()
-    t = get_template('user_upload_strategy_page.html')
-    html = t.render(RequestContext(request,{'current_date': now}))
-    return HttpResponse(html)
+    return render_to_response('user_upload_strategy_page.html', {'current_date': now}, context_instance=RequestContext(request))
 
+
+def handle_upload_strategy(request):
+    f = request.FILES['datafile']
+    base = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(base, 'upload')
+    (root, ext) = os.path.splitext(f.name)
+    root += ".strategy"
+    path = os.path.join(path, root)
+    with open(path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    try:
+        Strategy.objects.get(name=root)
+    except Strategy.DoesNotExist:
+        s = Strategy(name=root,path=path)
+        s.save()
+
+    return redirect("/user/upload_strategy/")
 
 def user_run_strategy(request):
-    now = datetime.now()
-    t = get_template('run_strategy_page.html')
-    html = t.render(RequestContext(request,{'current_date': now}))
-    return HttpResponse(html)
+    try:
+        data_list = Strategy.objects.all()
+    except Strategy.DoesNotExist:
+        pass
+
+    return render_to_response('run_strategy_page.html', {'data_list': data_list},
+                              context_instance=RequestContext(request))
+
+def run_strategy_handler(request):
+    p = subprocess.Popen('ls', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    results = []
+    for line in p.stdout.readlines():
+        results.append(line)
+
+    p.wait()
+    return render_to_response('user_statistics_page.html', {'results': results},
+                              context_instance=RequestContext(request))
 
 
 def user_statistics(request):
@@ -130,9 +159,9 @@ def handle_upload_data(request):
             destination.write(chunk)
 
     try:
-        Data.objects.get(name=f.name)
+        Data.objects.get(name=root)
     except Data.DoesNotExist:
-        p = Data(name=f.name,path=path)
+        p = Data(name=root, path=path)
         p.save()
 
     return redirect("/manager/upload_data/")

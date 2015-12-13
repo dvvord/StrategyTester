@@ -1,6 +1,16 @@
 {% extends "main_client_page.html" %}
 {% block content %}
 {% if request.session.authenticated %}
-Name: {{ request.session.user_name }} <br> It is now {{ current_date }}.
+<br>
+<form method="POST" action="/user/run_strategy_handler/">
+<select name="strategy_name">
+<option value="0" selected>(please select:)</option>
+    {% for item in data_list %}
+        <option value="{{ item.name }}">{{ item.name }}</option>
+    {% endfor %}
+</select>
+<br>
+<input type="submit" name="Run">
+</form>
 {% endif %}
 {% endblock %}

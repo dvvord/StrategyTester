@@ -21,6 +21,8 @@ from StrategyUI import views
 
 urlpatterns = [
     url(r'^user/upload_strategy/$', views.user_upload_strategy, name='user_upload_strategy'),
+    url(r'^user/upload_data_handle/$', views.handle_upload_strategy,name='handle_upload_strategy'),
+    url(r'^user/run_strategy_handler/$', views.run_strategy_handler,name='run_strategy_handler'),
     url(r'^user/run_test/$', views.user_run_strategy,name='user_run_strategy'),
     url(r'^user/statistics/$', views.user_statistics,name='user_statistics'),
     url(r'^manager/$', views.main_manager_view,name='main_manager_view'),
