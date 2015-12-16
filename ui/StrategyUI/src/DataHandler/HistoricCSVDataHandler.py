@@ -10,8 +10,12 @@ import time
 import numpy as np
 import pandas as pd
 
-import src.settings as settings
-from src.Events.event import TickEvent
+from ..Events.event import TickEvent
+
+CSV_DATA_DIR = "X:\\Projects\\StrategyTester\\ui\\StrategyUI\\upload"
+OUTPUT_RESULTS_DIR = "X:\\Projects\\StrategyTester\\ui\\StrategyUI\\results"
+BASE_CURRENCY = "USD"
+
 
 
 class PriceHandler(object):
@@ -59,8 +63,8 @@ class HistoricCSVPriceHandler(PriceHandler):
         )
 
     def _list_all_csv_files(self):
-        files = os.listdir(settings.CSV_DATA_DIR)
-        pattern = re.compile("[A-Z]{6}_\d{8}.data")
+        files = os.listdir(CSV_DATA_DIR)
+        pattern = re.compile("[A-Z]{6}_\d{8}.csv")
         matching_files = [f for f in files if pattern.search(f)]
         matching_files.sort()
         return matching_files
@@ -73,7 +77,7 @@ class HistoricCSVPriceHandler(PriceHandler):
 
     def _open_convert_csv_files_for_day(self, date_str):
         p = self.pairs[0]
-        pair_path = self.csv_dir  # os.path.join(self.csv_dir, '%s_%s.data' % (p, date_str))
+        pair_path = self.csv_dir  # os.path.join(self.csv_dir, '%s_%s.csv' % (p, date_str))
         self.pair_frames[p] = pd.io.parsers.read_csv(
             pair_path, header=True, index_col=0,
             parse_dates=True, dayfirst=True,

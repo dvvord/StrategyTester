@@ -4,10 +4,19 @@ from django.template.loader import get_template
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
+from src.ExecutionHandler.execution import SimulatedExecution
+from src.Portfolio.portfolio import Portfolio
+from src.Strategy.strategy import TestStrategy, MovingAverageCrossStrategy
+from src.DataHandler.HistoricCSVDataHandler import HistoricCSVPriceHandler
+import Queue as queue
+from decimal import Decimal
+import imp
+import time
+import sys
 import subprocess
 import os
-
-from models import User, Profile, Result, Data, Strategy
+CSV_DATA_DIR = "X:\\Projects\\StrategyTester\\ui\\StrategyUI\\upload"
+from models import User, Profile, Result, Data, StrategyModel
 
 
 def index(request):
@@ -83,41 +92,74 @@ def handle_upload_strategy(request):
         for chunk in f.chunks():
             destination.write(chunk)
     try:
-        Strategy.objects.get(name=root)
-    except Strategy.DoesNotExist:
-        s = Strategy(name=root,path=path)
+        StrategyModel.objects.get(name=root)
+    except StrategyModel.DoesNotExist:
+        s = StrategyModel(name=root,path=path)
         s.save()
 
     return redirect("/user/upload_strategy/")
 
 def user_run_strategy(request):
     try:
-        data_list = Strategy.objects.all()
-    except Strategy.DoesNotExist:
+        data_list = StrategyModel.objects.all()
+    except StrategyModel.DoesNotExist:
         pass
 
     return render_to_response('run_strategy_page.html', {'data_list': data_list},
                               context_instance=RequestContext(request))
 
+
+def ExecuteTest(results, pair, data_file, strategy_path="X:\Projects\StrategyTester\ui\StrategyUI\src\Strategy\strategy.py", equity=10000.0):
+    pairs = [pair] # ["GBPUSD"]  #
+
+    #strategy = imp.load_source('strategy', strategy_path)
+    equity = Decimal(equity)  # Decimal(10000.0)  #
+    file_path = os.path.join(CSV_DATA_DIR,data_file)  # "GBPUSD_20140102.csv")  #
+    event_queue = queue.Queue()
+    market_data = HistoricCSVPriceHandler(pairs,event_queue,file_path) # LoadData, generates MARKET event on new data arrived
+    strategy = None
+    if strategy_path.find("TestStrategy")>=0:
+        strategy = TestStrategy(pairs, event_queue) # Trading strategy - later will use Strategy patter to change during execution
+    else:
+        strategy = MovingAverageCrossStrategy(pairs, event_queue)
+    portfolio = Portfolio(market_data, event_queue, equity=equity, backtest=True) # Stores openned positions, and will analyze trading events according to Portfolio and
+                                   # current market state
+    execution = SimulatedExecution()
+    iters = 0
+    max_iters = 100
+    while iters < max_iters and market_data.continue_backtest:
+        try:
+            event = event_queue.get(False)
+        except queue.Empty:
+            market_data.stream_next_tick()
+        else:
+            if event is not None:
+                if event.type == 'TICK':
+                    strategy.calculate_signals(event)
+                    portfolio.update_portfolio(event,results)
+                elif event.type == 'SIGNAL':
+                    portfolio.execute_signal(event)
+                elif event.type == 'ORDER':
+                    execution.execute_order(event)
+        time.sleep(0.1)
+        iters += 1
+
+
 def run_strategy_handler(request):
     try:
-        s = Strategy.objects.get(name=request.POST["strategy_name"])[:1]
+        nm = request.POST["strategy_name"]
+        s = StrategyModel.objects.get(name=nm)
         strategy_name = s.name
-        strategy_path = s.path
+        str_path = s.path
+        results=[]
+        # call strategy tester cmd with path and params
+        ExecuteTest(results, "GBPUSD", "GBPUSD_20140102.csv", strategy_path=strategy_name)
+        return render_to_response('user_statistics_page.html', {'results': results},
+                                  context_instance=RequestContext(request))
     except:
-        redirect("/user/run_test/")
+        return redirect("/user/run_test/")
 
-    # call strategy tester cmd with path and params
-    p = subprocess.Popen('C:\Users\admin\Anaconda\python.exe X:/Projects/StrategyTester/main.py GBPUSD 1000.0 GBPUSD_20140102.csv',
-                         shell=True, stdout=subprocess.STDOUT)
-    p.wait()
 
-    results = []
-    for line in p.stdout.readlines():
-        results.append(line)
-
-    return render_to_response('user_statistics_page.html', {'results': results},
-                              context_instance=RequestContext(request))
 
 
 def user_statistics(request):

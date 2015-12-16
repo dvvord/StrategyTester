@@ -23,9 +23,12 @@ class Profile(models.Model):
     commission = models.FloatField()
 
 
-class Strategy(models.Model):
+class StrategyModel(models.Model):
     name = models.CharField(max_length=50)
     path = models.CharField(max_length=260)
+    def __unicode__(self):
+        return unicode(self.name)
+
 
 class Trade(models.Model):
     date = models.DateTimeField(default=datetime.now())
@@ -34,6 +37,6 @@ class Trade(models.Model):
 
 
 class Result(models.Model):
-    strategy = models.ForeignKey(Strategy)
+    strategy = models.ForeignKey(StrategyModel)
     date = models.DateTimeField(default=datetime.now())
     profit = models.FloatField()

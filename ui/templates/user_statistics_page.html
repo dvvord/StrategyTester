@@ -3,9 +3,10 @@
 {% if request.session.authenticated %}
     Results:
     <table>
+    <tr><td>Data</td><td>Equity</td><td>Profit</td></tr>
     {% for item in results %}
         <tr>
-            <td>{{ item }}</td>
+            <td>{{ item.0 }}</td><td>{{ item.1 }}</td><td>{{ item.2 }}</td>
         </tr>
     {% endfor %}
     </table>
